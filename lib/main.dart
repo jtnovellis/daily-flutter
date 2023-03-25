@@ -1,4 +1,6 @@
+import 'package:daily_flutter/screens/autentication_view.dart';
 import 'package:daily_flutter/screens/login_view.dart';
+import 'package:daily_flutter/screens/signup_view.dart';
 import 'package:flutter/material.dart';
 
 // Amplify Flutter Packages
@@ -18,11 +20,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Counter App',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const HomeScreen());
+      title: 'Counter App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const HomeScreen(),
+    );
   }
 }
 
@@ -56,6 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const LoginScreen();
+    return const AuthenticationScreen();
   }
 }

@@ -1,35 +1,54 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:daily_flutter/widgets/text_input_field.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _username = TextEditingController();
+  final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   bool _isLoading = false;
+  bool _signUpComplete = false;
 
   @override
   void dispose() {
     super.dispose();
+    _email.dispose();
     _username.dispose();
     _password.dispose();
   }
 
-  void logInUser() {
+  void signUpUser() async {
     setState(() {
       _isLoading = true;
     });
-    print(_username.text);
-    print(_password.text);
-
-    setState(() {
-      _isLoading = false;
-    });
+    try {
+      final result = await Amplify.Auth.signUp(
+        username: _username.text,
+        password: _password.text,
+        options: CognitoSignUpOptions(
+          userAttributes: {
+            CognitoUserAttributeKey.email: _email.text,
+          },
+        ),
+      );
+      setState(() {
+        _signUpComplete = result.isSignUpComplete;
+      });
+    } on AuthException catch (e) {
+      safePrint(e.message);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -42,6 +61,14 @@ class _LoginScreenState extends State<LoginScreen> {
             Flexible(
               flex: 1,
               child: Container(),
+            ),
+            TextInputField(
+              textEditingController: _email,
+              hintText: 'Enter your email',
+              textInputType: TextInputType.emailAddress,
+            ),
+            const SizedBox(
+              height: 18,
             ),
             TextInputField(
               textEditingController: _username,
@@ -61,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 18,
             ),
             InkWell(
-              onTap: logInUser,
+              onTap: signUpUser,
               child: Container(
                 alignment: Alignment.center,
                 width: double.infinity,
@@ -77,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.white,
                       )
                     : const Text(
-                        'Log In',
+                        'Sign Up',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
